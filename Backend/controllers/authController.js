@@ -14,13 +14,6 @@ exports.forgotPassword = async (req, res) => {
         if (!user) {
             return res.status(404).json({ message: "User not found!" });
         }
-
-        // ✅ Generate a 6-digit OTP (Numbers only)
-        // const otp = otpGenerator.generate(6, { 
-        //     digits: true, 
-        //     alphabets: false, 
-        //     specialChars: false 
-        // });
         const otp = Math.floor(100000 + Math.random() * 900000).toString();
 
         console.log("Generated OTP:", otp); // Debugging to verify numeric OTP
@@ -171,3 +164,5 @@ exports.checkSession = (req, res) => {
         res.status(401).json({ message: "Invalid session." });
     }
 };
+
+

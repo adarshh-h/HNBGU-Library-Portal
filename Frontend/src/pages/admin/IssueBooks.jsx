@@ -12,7 +12,6 @@ const IssueBooks = () => {
   const [success, setSuccess] = useState("");
   const [loading, setLoading] = useState(false);
 
-  // Axios config
   useEffect(() => {
     axios.defaults.withCredentials = true;
     axios.defaults.baseURL = "http://localhost:5000";
@@ -70,10 +69,7 @@ const IssueBooks = () => {
   };
 
   const addBook = () => {
-    if (
-      bookDetails &&
-      !selectedBooks.some((b) => b._id === bookDetails._id)
-    ) {
+    if (bookDetails && !selectedBooks.some((b) => b._id === bookDetails._id)) {
       setSelectedBooks([...selectedBooks, bookDetails]);
       setAccessionNumber("");
       setBookDetails(null);
@@ -133,85 +129,81 @@ const IssueBooks = () => {
       <form onSubmit={handleSubmit} className="space-y-6">
         {/* Student Section */}
         <div>
-          <label className="block mb-1 font-medium text-gray-700">Roll Number</label>
-          <div className="flex">
+          <label className="block font-semibold mb-1">Roll Number</label>
+          <div className="flex space-x-2">
             <input
               type="text"
               value={rollNumber}
               onChange={(e) => setRollNumber(e.target.value)}
-              onBlur={fetchStudentDetails}
-              className="flex-1 p-2 border rounded-l"
+              className="border rounded px-3 py-2 w-full"
               placeholder="Enter roll number"
-              required
             />
             <button
               type="button"
               onClick={fetchStudentDetails}
-              className="bg-blue-600 text-white px-4 rounded-r hover:bg-blue-700"
+              className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
               disabled={loading}
             >
-              {loading ? "..." : "Fetch"}
+              Fetch Student
             </button>
           </div>
-
           {studentDetails && (
-            <div className="mt-2 p-3 bg-blue-50 rounded text-sm">
-              <p><strong>Name:</strong> {studentDetails.name}</p>
-              <p><strong>Dept:</strong> {studentDetails.department}</p>
-              <p><strong>Roll:</strong> {studentDetails.rollNumber}</p>
+            <div className="mt-2 text-sm text-gray-600">
+              👤 {studentDetails.name} | 🎓 {studentDetails.department} | 🏷️ Batch: {studentDetails.batch}
             </div>
           )}
         </div>
 
         {/* Book Section */}
         <div>
-          <label className="block mb-1 font-medium text-gray-700">Accession Number</label>
-          <div className="flex">
+          <label className="block font-semibold mb-1">Accession Number</label>
+          <div className="flex space-x-2">
             <input
               type="text"
               value={accessionNumber}
               onChange={(e) => setAccessionNumber(e.target.value)}
-              onBlur={fetchBookDetails}
-              className="flex-1 p-2 border rounded-l"
+              className="border rounded px-3 py-2 w-full"
               placeholder="Enter accession number"
             />
             <button
               type="button"
               onClick={fetchBookDetails}
-              className="bg-green-600 text-white px-4 rounded-r hover:bg-green-700"
+              className="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700"
               disabled={loading}
             >
-              {loading ? "..." : "Fetch"}
+              Fetch Book
             </button>
           </div>
 
           {bookDetails && (
-            <div className="mt-2 p-3 bg-green-50 rounded text-sm">
-              <p><strong>Title:</strong> {bookDetails.bookName}</p>
-              <p><strong>Author:</strong> {bookDetails.authorName}</p>
-              <p><strong>Accession:</strong> {bookDetails.accessionNumber}</p>
+            <div className="mt-2 flex justify-between items-center bg-gray-100 px-3 py-2 rounded">
+              <div>
+                📖 {bookDetails.bookName} by {bookDetails.authorName}
+              </div>
               <button
                 type="button"
                 onClick={addBook}
-                className="mt-2 bg-green-700 text-white px-3 py-1 rounded text-sm"
+                className="text-blue-600 font-semibold hover:underline"
               >
-                ➕ Add Book
+                ➕ Add
               </button>
             </div>
           )}
         </div>
 
-        {/* Selected Books */}
+        {/* Selected Books List */}
         {selectedBooks.length > 0 && (
           <div>
-            <h4 className="font-medium text-gray-700 mb-1">📚 Selected Books</h4>
-            <ul className="space-y-1 text-sm">
+            <label className="block font-semibold mb-1">📚 Selected Books:</label>
+            <ul className="space-y-1">
               {selectedBooks.map((book) => (
                 <li
                   key={book._id}
-                  className="flex justify-between items-center bg-gray-100 px-3 py-2 rounded"
+                  className="flex justify-between bg-gray-50 p-2 rounded items-center"
                 >
-                  <span>{book.bookName} ({book.accessionNumber})</span>
+                  <span>
+                    {book.bookName} - {book.accessionNumber}
+                  </span>
                   <button
                     type="button"
                     onClick={() => removeBook(book._id)}
@@ -225,53 +217,29 @@ const IssueBooks = () => {
           </div>
         )}
 
-        {/* Dates */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-          <div>
-            <label className="block text-sm font-medium text-gray-700">Issue Date</label>
-            <input
-              type="text"
-              value={getTodayDate()}
-              readOnly
-              className="w-full p-2 border bg-gray-100 rounded"
-            />
-          </div>
-          <div>
-            <label className="block text-sm font-medium text-gray-700">Due Date</label>
-            <input
-              type="date"
-              value={dueDate}
-              min={getTodayDate()}
-              onChange={(e) => setDueDate(e.target.value)}
-              required
-              className="w-full p-2 border rounded"
-            />
-          </div>
+        {/* Due Date */}
+        <div>
+          <label className="block font-semibold mb-1">📅 Due Date</label>
+          <input
+            type="date"
+            value={dueDate}
+            onChange={(e) => setDueDate(e.target.value)}
+            className="border rounded px-3 py-2"
+            required
+          />
         </div>
 
-        {/* Messages */}
-        {error && (
-          <p className="bg-red-100 border border-red-300 p-2 text-red-700 rounded">
-            {error}
-          </p>
-        )}
-        {success && (
-          <p className="bg-green-100 border border-green-300 p-2 text-green-700 rounded">
-            {success}
-          </p>
-        )}
+        {/* Error & Success */}
+        {error && <div className="text-red-600 font-medium">{error}</div>}
+        {success && <div className="text-green-600 font-medium">{success}</div>}
 
-        {/* Submit */}
+        {/* Submit Button */}
         <button
           type="submit"
-          className={`w-full py-2 rounded text-white font-semibold ${
-            loading || !studentDetails || selectedBooks.length === 0
-              ? "bg-gray-400 cursor-not-allowed"
-              : "bg-blue-600 hover:bg-blue-700"
-          }`}
-          disabled={loading || !studentDetails || selectedBooks.length === 0}
+          className="w-full bg-indigo-600 text-white py-2 px-4 rounded hover:bg-indigo-700 disabled:opacity-50"
+          disabled={loading}
         >
-          {loading ? "Issuing..." : "📗 Issue Books"}
+          {loading ? "Processing..." : "📤 Issue Books"}
         </button>
       </form>
     </div>
@@ -279,4 +247,3 @@ const IssueBooks = () => {
 };
 
 export default IssueBooks;
-

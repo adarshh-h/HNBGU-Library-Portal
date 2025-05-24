@@ -29,5 +29,5 @@ app.use("/api/returns", require("./routes/returnRoutes.js"));
 app.use("/api/history", require("./routes/historyRoutes"));
 
 
-const PORT = process.env.PORT || 5000;
+const PORT = process.env.PORT || 6000;
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));

@@ -297,14 +297,36 @@ exports.createStudent = async (req, res) => {
 };
 
 exports.getStudents = async (req, res) => {
-    try {
-        // Remove createdBy filter to allow all admins to see all students
-        const students = await User.find({ role: "student" }).select("-password");
-        res.status(200).json(students);
-    } catch (error) {
-        console.error("Error fetching students:", error);
-        res.status(500).json({ message: "Server Error" });
-    }
+  try {
+    const page = parseInt(req.query.page) || 1;
+    const limit = parseInt(req.query.limit) || 10;
+    const skip = (page - 1) * limit;
+    const search = req.query.search || "";
+
+    const searchQuery = {
+      role: "student",
+      $or: [
+        { name: { $regex: search, $options: "i" } },
+        { batch: { $regex: search, $options: "i" } },
+        { rollNumber: { $regex: search, $options: "i" } },
+      ],
+    };
+
+    const [students, total] = await Promise.all([
+      User.find(searchQuery).select("-password").skip(skip).limit(limit),
+      User.countDocuments(searchQuery),
+    ]);
+
+    res.status(200).json({
+      students,
+      total,
+      totalPages: Math.ceil(total / limit),
+      currentPage: page,
+    });
+  } catch (error) {
+    console.error("Error fetching students:", error);
+    res.status(500).json({ message: "Server Error" });
+  }
 };
 
 exports.updateStudent = async (req, res) => {

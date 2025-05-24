@@ -9,19 +9,41 @@ const StudentLogin = () => {
     const [error, setError] = useState("");
     const navigate = useNavigate();
 
+    // const handleLogin = async (e) => {
+    //     e.preventDefault();
+    //     setLoading(true);
+    //     setError("");
+
+    //     try {
+    //         await axios.post(
+    //             "http://localhost:5000/api/auth/student-login",
+    //             { email, password },
+    //             { withCredentials: true }
+    //         );
+
+    //         localStorage.setItem("role", "student");
+    //         navigate("/student-dashboard", { replace: true });
+    //     } catch (error) {
+    //         setError(error.response?.data?.message || "Login failed!");
+    //     } finally {
+    //         setLoading(false);
+    //     }
+    // };
+
     const handleLogin = async (e) => {
         e.preventDefault();
         setLoading(true);
         setError("");
 
         try {
-            await axios.post(
+            const response = await axios.post(
                 "http://localhost:5000/api/auth/student-login",
                 { email, password },
                 { withCredentials: true }
             );
 
             localStorage.setItem("role", "student");
+            localStorage.setItem("name", response.data.user.name); // Add this line
             navigate("/student-dashboard", { replace: true });
         } catch (error) {
             setError(error.response?.data?.message || "Login failed!");
@@ -29,11 +51,13 @@ const StudentLogin = () => {
             setLoading(false);
         }
     };
-
+    
     return (
         <div className="flex items-center justify-center min-h-screen bg-gray-100">
             <div className="bg-white p-8 rounded-lg shadow-lg w-96">
-                <h2 className="text-3xl font-semibold text-center mb-6 text-green-600">Student Login</h2>
+                <h2 className="text-3xl font-semibold text-center mb-6 text-green-600">
+                    Student Login
+                </h2>
                 <form onSubmit={handleLogin} className="space-y-4">
                     <input
                         type="email"
@@ -88,7 +112,10 @@ const StudentLogin = () => {
                 </form>
                 {/* Add "Forgot Password" link */}
                 <div className="mt-4 text-center">
-                    <Link to="/forgot-password" className="text-green-500 hover:text-green-600">
+                    <Link
+                        to="/forgot-password"
+                        className="text-green-500 hover:text-green-600"
+                    >
                         Forgot Password?
                     </Link>
                 </div>

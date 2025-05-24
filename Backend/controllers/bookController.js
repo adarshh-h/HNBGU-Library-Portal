@@ -95,10 +95,21 @@ exports.bulkImportBooksCSV = async (req, res) => {
 
 exports.getAllBooks = async (req, res) => {
     try {
-        const books = await Book.find({}).select("-__v"); // Fetch all books and exclude the __v field
-        res.status(200).json(books);
+      const page = parseInt(req.query.page) || 1;
+      const limit = parseInt(req.query.limit) || 10;
+      const skip = (page - 1) * limit;
+  
+      const books = await Book.find().skip(skip).limit(limit);
+      const totalBooks = await Book.countDocuments();
+  
+      res.status(200).json({
+        books,
+        totalPages: Math.ceil(totalBooks / limit),
+        totalBooks,
+      });
     } catch (error) {
-        console.error("Error fetching books:", error);
-        res.status(500).json({ message: "Server Error" });
+      console.error("Error fetching books:", error);
+      res.status(500).json({ message: "Server Error" });
     }
-};
+  };
+  

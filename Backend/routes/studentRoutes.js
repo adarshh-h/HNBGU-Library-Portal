@@ -100,7 +100,6 @@ router.get("/history", protect("student"), async (req, res) => {
     }
 });
 
-
 router.post("/change-password", protect("student"), async (req, res) => {
     try {
       const { currentPassword, newPassword } = req.body;
@@ -164,5 +163,28 @@ router.post("/change-password", protect("student"), async (req, res) => {
       });
     }
   });
-  
+
+// router.get('/profile', protect('student'), async (req, res) => {
+//   try {
+//     res.json({ user: req.user });
+//   } catch (err) {
+//     res.status(500).json({ message: 'Server error' });
+//   }
+// });
+
+// router.put('/profile', protect('student'), async (req, res) => {
+//   try {
+//     const { name, phone, department, batch } = req.body;
+//     const user = await User.findByIdAndUpdate(
+//       req.user._id,
+//       { name, phone, department, batch },
+//       { new: true }
+//     ).select('-password');
+//     res.json({ user });
+//   } catch (err) {
+//     res.status(500).json({ message: 'Update failed' });
+//   }
+// });
+
+
 module.exports = router;

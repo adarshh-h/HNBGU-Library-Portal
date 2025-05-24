@@ -12,5 +12,3 @@ router.post("/bulk-import-books", protect("librarian"), upload.single("file"), b
 router.get("/books", getAllBooks);
 
 module.exports = router;
-
-

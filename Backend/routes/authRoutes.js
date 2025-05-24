@@ -7,7 +7,7 @@ router.post("/librarian-login", librarianLogin);
 router.post("/student-login", studentLogin);
 router.post("/logout", logout);
 router.get("/check-session", checkSession);
-router.post("/forgot-password", forgotPassword); // Request OTP
-router.post("/verify-otp", verifyOtp); // Verify OTP & Reset Password
+router.post("/forgot-password", forgotPassword);
+router.post("/verify-otp", verifyOtp); 
 
 module.exports = router;

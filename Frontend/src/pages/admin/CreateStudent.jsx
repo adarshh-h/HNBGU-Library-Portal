@@ -15,12 +15,6 @@ const CreateStudent = () => {
     // Predefined list of departments
     const departments = [
         "Computer Science & Engineering",
-        "Electrical & Electronics Engineering",
-        "Mechanical Engineering",
-        "Civil Engineering",
-        "Information Technology",
-        "Electronics & Communication Engineering",
-        "Chemical Engineering",
     ];
 
     // Validate name (alphabets, spaces, hyphens, and apostrophes)
