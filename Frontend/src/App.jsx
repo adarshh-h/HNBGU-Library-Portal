@@ -87,11 +87,9 @@ import IssueBooks from "./pages/admin/IssueBooks";
 import ReturnBooks from "./pages/admin/ReturnBooks";
 import HistoryView from "./pages/admin/HistorySearch";
 import StudentHistory from './pages/student/StudentHistory';
-import ChangePassword from './pages/student/ChangePassword';
-
-import ProfilePage from "./pages/Profile"; // Renamed appropriately
-
+import ProfilePage from "./pages/ProfilePage"; 
 import MainLayout from "./components/MainLayout";
+
 
 function App() {
     return (
@@ -124,7 +122,6 @@ function App() {
                     <Route element={<ProtectedRoute allowedRole="student" />}>
                         <Route path="/student-dashboard" element={<StudentDashboard />} />
                         <Route path="/student/history" element={<StudentHistory />} />
-                        <Route path="/student/change-password" element={<ChangePassword />} />
                         <Route path="/student/profile" element={<ProfilePage />} />
                     </Route>
                 </Route>

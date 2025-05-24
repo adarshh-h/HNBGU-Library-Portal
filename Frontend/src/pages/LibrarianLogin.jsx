@@ -9,26 +9,9 @@ const LibrarianLogin = () => {
     const [error, setError] = useState("");
     const navigate = useNavigate();
 
-    // const handleLogin = async (e) => {
-    //     e.preventDefault();
-    //     setLoading(true);
-    //     setError("");
-
-    //     try {
-    //         await axios.post(
-    //             "http://localhost:5000/api/auth/librarian-login",
-    //             { email, password },
-    //             { withCredentials: true }
-    //         );
-
-    //         localStorage.setItem("role", "librarian");
-    //         navigate("/admin-dashboard", { replace: true });
-    //     } catch (error) {
-    //         setError(error.response?.data?.message || "Login failed!");
-    //     } finally {
-    //         setLoading(false);
-    //     }
-    // };
+   
+    
+    
     const handleLogin = async (e) => {
         e.preventDefault();
         setLoading(true);
@@ -50,6 +33,8 @@ const LibrarianLogin = () => {
             setLoading(false);
         }
     };
+
+    
     return (
         <div className="flex items-center justify-center min-h-screen bg-gray-100">
             <div className="bg-white p-8 rounded-lg shadow-lg w-96">

@@ -2,7 +2,7 @@ const mongoose = require("mongoose");
 require("dotenv").config();
 
 const connectDB = async () => {
-    console.log("MONGO_URI from .env:", process.env.MONGO_URI);  // Debugging
+    console.log("MONGO_URI from .env:", process.env.MONGO_URI);
 
     if (!process.env.MONGO_URI) {
         throw new Error("MONGO_URI is missing in .env file!");
@@ -16,7 +16,5 @@ const connectDB = async () => {
         process.exit(1);
     }
 };
-
-
 
 module.exports = connectDB;

@@ -166,3 +166,47 @@ exports.checkSession = (req, res) => {
 };
 
 
+exports.changePassword = [
+  // Validation middleware
+  body('currentPassword').notEmpty().withMessage('Current password is required'),
+  body('newPassword').isLength({ min: 6 }).withMessage('Password must be at least 6 characters'),
+
+  async (req, res) => {
+    // Check for validation errors
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return res.status(400).json({ errors: errors.array() });
+    }
+
+    try {
+      const user = await User.findById(req.user._id);
+      if (!user) {
+        return res.status(404).json({ error: 'User not found' });
+      }
+
+      // Verify current password
+      const isMatch = await bcrypt.compare(req.body.currentPassword, user.password);
+      if (!isMatch) {
+        return res.status(400).json({ error: 'Current password is incorrect' });
+      }
+
+      // Check if new password is different
+      const isSame = await bcrypt.compare(req.body.newPassword, user.password);
+      if (isSame) {
+        return res.status(400).json({ error: 'New password must be different from current' });
+      }
+
+      // Update password
+      user.password = req.body.newPassword;
+      await user.save();
+
+      res.json({ 
+        success: true, 
+        message: 'Password updated successfully. Please login again.' 
+      });
+    } catch (error) {
+      console.error('Password change error:', error);
+      res.status(500).json({ error: 'Server error during password change' });
+    }
+  }
+];

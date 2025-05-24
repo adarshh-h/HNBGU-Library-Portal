@@ -3,6 +3,7 @@ const { protect } = require("../middleware/authMiddleware");
 const Issue = require("../models/Issue");
 const User = require("../models/User");
 const bcrypt = require("bcryptjs");
+const { changePassword } = require("../controllers/authController");
 
 const router = express.Router();
 
@@ -99,92 +100,41 @@ router.get("/history", protect("student"), async (req, res) => {
         res.status(500).json({ message: "Server error" });
     }
 });
+  
+// Add these routes near the other profile routes
+router.get('/profile', protect('student'), async (req, res) => {
+  try {
+    res.json({ 
+      user: {
+        _id: req.user._id,
+        name: req.user.name,
+        email: req.user.email,
+        phone: req.user.phone,
+        department: req.user.department,
+        batch: req.user.batch,
+        rollNumber: req.user.rollNumber,
+        role: req.user.role  // Make sure this is included
+      }
+    });
+  } catch (err) {
+    res.status(500).json({ message: 'Server error' });
+  }
+});
 
-router.post("/change-password", protect("student"), async (req, res) => {
-    try {
-      const { currentPassword, newPassword } = req.body;
-  
-      // Validate input
-      if (!currentPassword || !newPassword) {
-        return res.status(400).json({
-          success: false,
-          error: "Both current and new password are required.",
-        });
-      }
-  
-      if (newPassword.length < 6) {
-        return res.status(400).json({
-          success: false,
-          error: "New password must be at least 6 characters long.",
-        });
-      }
-  
-      // Fetch user
-      const user = await User.findById(req.user._id);
-      if (!user) {
-        return res.status(404).json({
-          success: false,
-          error: "User not found.",
-        });
-      }
-  
-      // Match current password
-      const isMatch = await bcrypt.compare(currentPassword, user.password);
-      if (!isMatch) {
-        return res.status(400).json({
-          success: false,
-          error: "Current password is incorrect.",
-        });
-      }
-  
-      // Check if new password is same as current
-      const isSame = await bcrypt.compare(newPassword, user.password);
-      if (isSame) {
-        return res.status(400).json({
-          success: false,
-          error: "New password must be different from current password.",
-        });
-      }
-  
-      // Set new password (will hash automatically via pre-save middleware)
-      user.password = newPassword;
-      user.passwordChangedAt = Date.now();
-      await user.save();
-  
-      res.json({
-        success: true,
-        message: "Password changed successfully. Please login again.",
-      });
-    } catch (error) {
-      console.error("Error changing password:", error.message);
-      res.status(500).json({
-        success: false,
-        error: "Server error while changing password.",
-      });
-    }
-  });
+router.put('/profile', protect('student'), async (req, res) => {
+  try {
+    const { name, phone, department, batch } = req.body;
+    const user = await User.findByIdAndUpdate(
+      req.user._id,
+      { name, phone, department, batch },
+      { new: true }
+    ).select('-password');
+    res.json({ user });
+  } catch (err) {
+    res.status(500).json({ message: 'Update failed' });
+  }
+});
 
-// router.get('/profile', protect('student'), async (req, res) => {
-//   try {
-//     res.json({ user: req.user });
-//   } catch (err) {
-//     res.status(500).json({ message: 'Server error' });
-//   }
-// });
-
-// router.put('/profile', protect('student'), async (req, res) => {
-//   try {
-//     const { name, phone, department, batch } = req.body;
-//     const user = await User.findByIdAndUpdate(
-//       req.user._id,
-//       { name, phone, department, batch },
-//       { new: true }
-//     ).select('-password');
-//     res.json({ user });
-//   } catch (err) {
-//     res.status(500).json({ message: 'Update failed' });
-//   }
-// });
-
+router.post("/change-password", protect("student"), changePassword);
 
 module.exports = router;
