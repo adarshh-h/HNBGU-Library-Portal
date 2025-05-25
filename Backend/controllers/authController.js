@@ -70,31 +70,6 @@ exports.verifyOtp = async (req, res) => {
     }
 };
 
-// const generateToken = (res, user) => {
-//     const token = jwt.sign({ id: user._id, role: user.role }, process.env.JWT_SECRET, { expiresIn: "1h" });
-
-//     res.cookie("token", token, {
-//         httpOnly: true,
-//         secure: process.env.NODE_ENV === "production", // ✅ Only secure in production
-//         sameSite: "Strict",
-//         maxAge: 3600000 // ✅ 1 Hour Expiry
-//     });
-// };
-exports.checkSession = (req, res) => {
-    const token = req.cookies.token;
-    console.log('Token:', token);  // Log the token for debugging
-    if (!token) return res.status(401).json({ message: "Session expired. Please log in again." });
-
-    try {
-        const decoded = jwt.verify(token, process.env.JWT_SECRET);
-        res.json({ user: decoded });
-    } catch (error) {
-        console.error('Token verification error:', error);  // Log the error
-        res.status(401).json({ message: "Invalid session." });
-    }
-};
-
-
 exports.librarianLogin = [
     // Validate email and password
     body("email").isEmail().withMessage("Please provide a valid email address."),
@@ -157,6 +132,16 @@ exports.studentLogin = [
     }
 ];
 
+const generateToken = (res, user) => {
+    const token = jwt.sign({ id: user._id, role: user.role }, process.env.JWT_SECRET, { expiresIn: "1h" });
+
+    res.cookie("token", token, {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === "production", // ✅ Only secure in production
+        sameSite: "Strict",
+        maxAge: 3600000 // ✅ 1 Hour Expiry
+    });
+};
 
 exports.logout = (req, res) => {
     res.cookie("token", "", { httpOnly: true, expires: new Date(0) }); // ✅ Explicit Expiry
