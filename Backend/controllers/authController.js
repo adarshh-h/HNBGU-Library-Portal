@@ -206,16 +206,37 @@ exports.logout = (req, res) => {
     res.json({ message: "Logged out successfully!" });
 };
 
+// exports.checkSession = (req, res) => {
+//     const token = req.cookies.token;
+//     if (!token) return res.status(401).json({ message: "Session expired. Please log in again." });
+
+//     try {
+//         const decoded = jwt.verify(token, process.env.JWT_SECRET);
+//         res.json({ user: decoded });
+//     } catch (error) {
+//         res.status(401).json({ message: "Invalid session." });
+//     }
+// };
+
 exports.checkSession = (req, res) => {
-    const token = req.cookies.token;
-    if (!token) return res.status(401).json({ message: "Session expired. Please log in again." });
+  // Check both cookies and Authorization header
+  const token = req.cookies.token || req.headers.authorization?.split(' ')[1];
+  
+  if (!token) {
+    return res.status(401).json({ 
+      message: "No authentication token found",
+      error: "MISSING_TOKEN"
+    });
+  }
 
-    try {
-        const decoded = jwt.verify(token, process.env.JWT_SECRET);
-        res.json({ user: decoded });
-    } catch (error) {
-        res.status(401).json({ message: "Invalid session." });
-    }
+  try {
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    res.json({ user: decoded });
+  } catch (error) {
+    console.error('Token verification failed:', error.message);
+    res.status(401).json({ 
+      message: "Invalid or expired token",
+      error: "INVALID_TOKEN"
+    });
+  }
 };
-
-
