@@ -75,8 +75,19 @@ const ProtectedRoute = ({ allowedRole }) => {
   useEffect(() => {
     const checkSession = async () => {
       try {
+        // Retrieve the token from localStorage or cookies
+        const token = localStorage.getItem("authToken");
+
+        if (!token) {
+          throw new Error("No authentication token found");
+        }
+
+        // Make the request with the token in headers
         const res = await axios.get(`${API_BASE_URL}/api/auth/check-session`, {
-          withCredentials: true,
+          withCredentials: true, // Include cookies if needed
+          headers: {
+            Authorization: `Bearer ${token}`, // Attach the token in Authorization header
+          },
         });
 
         if (res.data.user.role !== allowedRole) {
@@ -95,18 +106,16 @@ const ProtectedRoute = ({ allowedRole }) => {
 
         // Handle different error types
         if (err.response) {
-          // Server responded with a status other than 2xx
           console.error("Server error:", err.response.data);
         } else if (err.request) {
-          // Request was made but no response was received
           console.error("Network error:", err.request);
         } else {
-          // Something went wrong during the request setup
           console.error("Error message:", err.message);
         }
 
         // Clear local storage and redirect to the login page
-        localStorage.removeItem("role");
+        localStorage.removeItem("authToken"); // Clear the token
+        localStorage.removeItem("role"); // Clear the role
         navigate("/", { replace: true });
       }
     };
@@ -122,4 +131,5 @@ const ProtectedRoute = ({ allowedRole }) => {
 };
 
 export default ProtectedRoute;
+
 
