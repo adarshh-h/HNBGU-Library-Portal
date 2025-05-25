@@ -3,32 +3,61 @@
 // const connectDB = require("./config/db");
 // const cors = require("cors");
 // const cookieParser = require("cookie-parser");
+// const { setupScheduledJobs } = require("./services/scheduler");
 
+// // Connect to MongoDB
 // connectDB();
 
+// // Initialize app
 // const app = express();
 
+// // Middlewares
 // app.use(express.json());
 // app.use(cookieParser());
 
+// // CORS Configuration
+// // app.use(cors({
+// //   origin: "http://localhost:5173",
+// //   https://hnb-library-system.vercel.app
+// //   credentials: true,
+// //   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+// //   allowedHeaders: ['Content-Type', 'Authorization'],
+// // }));
+// const allowedOrigins = [
+//   'http://localhost:5173',
+//   'https://hnb-library-system.vercel.app'
+// ];
+
 // app.use(cors({
-//     origin: "http://localhost:5173", 
-//     credentials: true 
+//   origin: function (origin, callback) {
+//     if (!origin || allowedOrigins.includes(origin)) {
+//       callback(null, true);
+//     } else {
+//       callback(new Error("Not allowed by CORS"));
+//     }
+//   },
+//   credentials: true,
+//   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+//   allowedHeaders: ['Content-Type', 'Authorization']
 // }));
 
-
+// // Routes
 // app.use("/api/auth", require("./routes/authRoutes"));
 // app.use("/api/admin", require("./routes/adminRoutes"));
 // app.use("/api/student", require("./routes/studentRoutes"));
 // app.use("/api/books", require("./routes/bookRoutes"));
-// app.use("/api/issues", require("./routes/issueRoutes.js"));
-// app.use("/api/returns", require("./routes/returnRoutes.js"));
+// app.use("/api/issues", require("./routes/issueRoutes"));
+// app.use("/api/returns", require("./routes/returnRoutes"));
 // app.use("/api/history", require("./routes/historyRoutes"));
 
-// const PORT = process.env.PORT || 6000;
-// app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
+// // Start Scheduled Jobs
+// setupScheduledJobs();
 
-// server.js
+// // Start Server
+// const PORT = process.env.PORT || 6000;
+// app.listen(PORT, () => {
+//   console.log(`✅ Server running on port ${PORT}`);
+// });
 
 require("dotenv").config();
 const express = require("express");
@@ -48,30 +77,36 @@ app.use(express.json());
 app.use(cookieParser());
 
 // CORS Configuration
-// app.use(cors({
-//   origin: "http://localhost:5173",
-//   https://hnb-library-system.vercel.app
-//   credentials: true,
-//   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-//   allowedHeaders: ['Content-Type', 'Authorization'],
-// }));
 const allowedOrigins = [
-  'http://localhost:5173',
-  'https://hnb-library-system.vercel.app'
+  'http://localhost:5173', // Local development
+  'https://hnb-library-system.vercel.app', // Production frontend
+  'https://hnb-library-system-git-main-adarshs-projects-3c69f35f.vercel.app', // Vercel preview deployments
+  // 'https://hnb-library-system.vercel.app' // Alternative format
 ];
 
-app.use(cors({
+const corsOptions = {
   origin: function (origin, callback) {
-    if (!origin || allowedOrigins.includes(origin)) {
+    // Allow requests with no origin (like mobile apps or curl requests)
+    if (!origin) return callback(null, true);
+    
+    if (allowedOrigins.includes(origin)) {
       callback(null, true);
     } else {
-      callback(new Error("Not allowed by CORS"));
+      console.warn(`Blocked by CORS: ${origin}`);
+      callback(new Error('Not allowed by CORS'));
     }
   },
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-  allowedHeaders: ['Content-Type', 'Authorization']
-}));
+  allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With'],
+  exposedHeaders: ['Authorization'], // Expose Authorization header
+  maxAge: 86400 // 24 hours
+};
+
+app.use(cors(corsOptions));
+
+// Handle preflight requests
+app.options('*', cors(corsOptions));
 
 // Routes
 app.use("/api/auth", require("./routes/authRoutes"));
@@ -89,4 +124,5 @@ setupScheduledJobs();
 const PORT = process.env.PORT || 6000;
 app.listen(PORT, () => {
   console.log(`✅ Server running on port ${PORT}`);
+  console.log(`🌐 Allowed CORS origins: ${allowedOrigins.join(', ')}`);
 });
