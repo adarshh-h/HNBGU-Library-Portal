@@ -177,14 +177,27 @@ exports.changePassword = [
   }
 ];
 
+// const generateToken = (res, user) => {
+//     const token = jwt.sign({ id: user._id, role: user.role }, process.env.JWT_SECRET, { expiresIn: "1h" });
+
+//     res.cookie("token", token, {
+//         httpOnly: true,
+//         secure: process.env.NODE_ENV === "production", // ✅ Only secure in production
+//         sameSite: "Strict",
+//         maxAge: 3600000 // ✅ 1 Hour Expiry
+//     });
+// };
+
 const generateToken = (res, user) => {
     const token = jwt.sign({ id: user._id, role: user.role }, process.env.JWT_SECRET, { expiresIn: "1h" });
 
     res.cookie("token", token, {
         httpOnly: true,
-        secure: process.env.NODE_ENV === "production", // ✅ Only secure in production
-        sameSite: "Strict",
-        maxAge: 3600000 // ✅ 1 Hour Expiry
+        secure: process.env.NODE_ENV === "production", // Secure in production
+        sameSite: process.env.NODE_ENV === "production" ? "none" : "lax", // None for cross-site in production
+        domain: process.env.NODE_ENV === "production" ? ".onrender.com" : undefined, // Domain for production
+        maxAge: 3600000,
+        path: "/"
     });
 };
 
