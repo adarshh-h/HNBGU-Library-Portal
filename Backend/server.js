@@ -78,11 +78,12 @@ app.use(cookieParser());
 
 // CORS Configuration
 const allowedOrigins = [
-  'http://localhost:5173', // Local development
-  'https://hnb-library-system.vercel.app', // Production frontend
-  'https://hnb-library-system-git-main-adarshs-projects-3c69f35f.vercel.app', // Vercel preview deployments
-  // 'https://hnb-library-system.vercel.app' // Alternative format
+  'http://localhost:5173',
+  'https://hnb-library-system.vercel.app',
+  'https://hnb-library-system.onrender.com', // ✅ Add this line
+  'https://hnb-library-system-git-main-adarshs-projects-3c69f35f.vercel.app',
 ];
+
 
 const corsOptions = {
   origin: function (origin, callback) {
