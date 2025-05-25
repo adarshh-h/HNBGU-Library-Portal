@@ -5,73 +5,38 @@ const getIssueReturnHistory = async (req, res) => {
   try {
     const { studentId } = req.params;
 
-    // Validate studentId exists
     if (!studentId) {
-      return res.status(400).json({ 
+      return res.status(400).json({
         success: false,
         message: "Student ID is required"
       });
     }
 
-    // Get student details
     const student = await User.findById(studentId)
       .select("name rollNumber department batch email");
-    
+
     if (!student) {
-      return res.status(404).json({ 
+      return res.status(404).json({
         success: false,
-        message: "Student not found",
-        code: "STUDENT_NOT_FOUND"
+        message: "Student not found"
       });
     }
 
-    // Get all issue records for the student
     const issues = await Issue.find({ student: studentId })
-      .populate({
-        path: "books.book",
-        select: "bookName accessionNumber authorName"
-      })
-      .populate({
-        path: "returnedBooks.book",
-        select: "_id"
-      })
+      .populate("books.book", "bookName accessionNumber authorName")
+      .populate("returnedBooks.book", "_id")
       .sort({ createdAt: -1 });
 
-    // Prepare empty response with student info
-    const response = {
-      success: true,
-      student: {
-        name: student.name,
-        rollNumber: student.rollNumber,
-        department: student.department,
-        batch: student.batch,
-        email: student.email
-      },
-      transactions: [],
-      message: "No transactions found for this student"
-    };
-
-    // If no issues found, return with student info
-    if (!issues.length) {
-      return res.status(200).json(response);
-    }
-
-    // Process transactions
     const transactions = [];
 
-    issues.forEach(issue => {
+    for (const issue of issues) {
       const returnedMap = new Map();
-      issue.returnedBooks.forEach(returnEntry => {
-        returnedMap.set(returnEntry.book._id.toString(), returnEntry.returnedAt);
+      issue.returnedBooks.forEach(rb => {
+        returnedMap.set(rb.issuedBookId.toString(), rb.returnedAt);
       });
 
       issue.books.forEach(bookEntry => {
-        const bookId = bookEntry.book._id.toString();
-        const isOverdue = new Date() > new Date(bookEntry.dueDate);
-        const fine = returnedMap.has(bookId) ? 
-          (bookEntry.fine || 0) : 
-          isOverdue ? calculateFine(new Date(bookEntry.dueDate)) : 0;
-
+        const issuanceId = bookEntry._id.toString();
         transactions.push({
           book: {
             _id: bookEntry.book._id,
@@ -80,33 +45,35 @@ const getIssueReturnHistory = async (req, res) => {
             authorName: bookEntry.book.authorName
           },
           issueId: issue._id,
+          issuedBookId: issuanceId,
           issueDate: bookEntry.issueDate,
           dueDate: bookEntry.dueDate,
-          returned: returnedMap.has(bookId),
-          returnedAt: returnedMap.get(bookId) || null,
-          fine: fine,
-          isOverdue: isOverdue
+          returned: returnedMap.has(issuanceId),
+          returnedAt: returnedMap.get(issuanceId) || null
         });
       });
-    });
-
-    // Update response with transactions
-    response.transactions = transactions;
-    response.message = `Found ${transactions.length} transactions`;
-    
-    if (transactions.length === 0) {
-      response.message = "No transactions found for this student";
     }
 
-    res.status(200).json(response);
+    res.status(200).json({
+      success: true,
+      student: {
+        name: student.name,
+        rollNumber: student.rollNumber,
+        department: student.department,
+        batch: student.batch,
+        email: student.email
+      },
+      transactions,
+      message: transactions.length
+        ? `Found ${transactions.length} transactions`
+        : "No transactions found"
+    });
 
   } catch (error) {
     console.error("Error in getIssueReturnHistory:", error);
-    res.status(500).json({ 
+    res.status(500).json({
       success: false,
-      message: "Server error while fetching history",
-      error: process.env.NODE_ENV === 'development' ? error.message : undefined,
-      code: "SERVER_ERROR"
+      message: "Server error while fetching history"
     });
   }
 };

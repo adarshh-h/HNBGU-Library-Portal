@@ -9,27 +9,6 @@ const StudentLogin = () => {
     const [error, setError] = useState("");
     const navigate = useNavigate();
 
-    // const handleLogin = async (e) => {
-    //     e.preventDefault();
-    //     setLoading(true);
-    //     setError("");
-
-    //     try {
-    //         await axios.post(
-    //             "http://localhost:5000/api/auth/student-login",
-    //             { email, password },
-    //             { withCredentials: true }
-    //         );
-
-    //         localStorage.setItem("role", "student");
-    //         navigate("/student-dashboard", { replace: true });
-    //     } catch (error) {
-    //         setError(error.response?.data?.message || "Login failed!");
-    //     } finally {
-    //         setLoading(false);
-    //     }
-    // };
-
     const handleLogin = async (e) => {
         e.preventDefault();
         setLoading(true);
@@ -38,6 +17,7 @@ const StudentLogin = () => {
         try {
             const response = await axios.post(
                 "http://localhost:5000/api/auth/student-login",
+                // `${import.meta.env.VITE_API_BASE_URL}/api/auth/student-login`,
                 { email, password },
                 { withCredentials: true }
             );

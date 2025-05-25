@@ -1,28 +1,65 @@
+// import { useEffect, useState } from "react";
+// import { Navigate, Outlet } from "react-router-dom";
+// import axios from "axios";
+
+// const ProtectedRoute = ({ allowedRole }) => {
+//     const [sessionValid, setSessionValid] = useState(true);
+//     const role = localStorage.getItem("role");
+
+//     useEffect(() => {
+//         axios.get("http://localhost:5000/api/auth/check-session", { withCredentials: true })
+//             .then((res) => {
+//                 if (res.data.user.role !== allowedRole) {
+//                     window.location.href = allowedRole === "librarian" ? "/admin-dashboard" : "/student-dashboard";
+//                 }
+//             })
+//             .catch(() => {
+//                 localStorage.removeItem("role");
+//                 window.location.href = "/";
+//                 setSessionValid(false);
+//             });
+//     }, [allowedRole]);
+
+//     if (!sessionValid) return null;
+    
+//     return <Outlet />;
+// };
+
+// export default ProtectedRoute;
 import { useEffect, useState } from "react";
-import { Navigate, Outlet } from "react-router-dom";
+import { Outlet, useNavigate } from "react-router-dom";
 import axios from "axios";
 
 const ProtectedRoute = ({ allowedRole }) => {
-    const [sessionValid, setSessionValid] = useState(true);
-    const role = localStorage.getItem("role");
+  const [isChecking, setIsChecking] = useState(true);
+  const navigate = useNavigate();
 
-    useEffect(() => {
-        axios.get("http://localhost:5000/api/auth/check-session", { withCredentials: true })
-            .then((res) => {
-                if (res.data.user.role !== allowedRole) {
-                    window.location.href = allowedRole === "librarian" ? "/admin-dashboard" : "/student-dashboard";
-                }
-            })
-            .catch(() => {
-                localStorage.removeItem("role");
-                window.location.href = "/";
-                setSessionValid(false);
-            });
-    }, [allowedRole]);
+  useEffect(() => {
+    axios
+      .get("http://localhost:5000/api/auth/check-session", {
+        withCredentials: true,
+      })
+      .then((res) => {
+        if (res.data.user.role !== allowedRole) {
+          // Redirect to the correct dashboard for *their* role
+          const redirectPath =
+            res.data.user.role === "librarian"
+              ? "/admin-dashboard"
+              : "/student-dashboard";
+          navigate(redirectPath, { replace: true });
+        } else {
+          setIsChecking(false);
+        }
+      })
+      .catch(() => {
+        localStorage.removeItem("role");
+        navigate("/", { replace: true });
+      });
+  }, [allowedRole, navigate]);
 
-    if (!sessionValid) return null;
-    
-    return <Outlet />;
+  if (isChecking) return <div>Checking session...</div>;
+
+  return <Outlet />;
 };
 
 export default ProtectedRoute;

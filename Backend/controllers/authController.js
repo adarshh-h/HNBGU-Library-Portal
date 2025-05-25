@@ -70,7 +70,6 @@ exports.verifyOtp = async (req, res) => {
     }
 };
 
-// ✅ Generate JWT & Set Cookie (Secure & Flexible)
 const generateToken = (res, user) => {
     const token = jwt.sign({ id: user._id, role: user.role }, process.env.JWT_SECRET, { expiresIn: "1h" });
 
@@ -82,7 +81,6 @@ const generateToken = (res, user) => {
     });
 };
 
-// ✅ Librarian Login with Validation
 exports.librarianLogin = [
     // Validate email and password
     body("email").isEmail().withMessage("Please provide a valid email address."),
@@ -114,7 +112,6 @@ exports.librarianLogin = [
     }
 ];
 
-// ✅ Student Login with Validation
 exports.studentLogin = [
     // Validate email and password
     body("email").isEmail().withMessage("Please provide a valid email address."),
@@ -146,13 +143,12 @@ exports.studentLogin = [
     }
 ];
 
-// ✅ Logout Route (Clears Token & Expiry)
+
 exports.logout = (req, res) => {
     res.cookie("token", "", { httpOnly: true, expires: new Date(0) }); // ✅ Explicit Expiry
     res.json({ message: "Logged out successfully!" });
 };
 
-// ✅ Check Session Validity
 exports.checkSession = (req, res) => {
     const token = req.cookies.token;
     if (!token) return res.status(401).json({ message: "Session expired. Please log in again." });
@@ -164,7 +160,6 @@ exports.checkSession = (req, res) => {
         res.status(401).json({ message: "Invalid session." });
     }
 };
-
 
 exports.changePassword = [
   // Validation middleware
