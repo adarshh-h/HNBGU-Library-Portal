@@ -70,6 +70,37 @@ exports.verifyOtp = async (req, res) => {
     }
 };
 
+// exports.librarianLogin = [
+//     // Validate email and password
+//     body("email").isEmail().withMessage("Please provide a valid email address."),
+//     body("password").notEmpty().withMessage("Password is required."),
+
+//     async (req, res) => {
+//         // Check for validation errors
+//         const errors = validationResult(req);
+//         if (!errors.isEmpty()) {
+//             return res.status(400).json({ errors: errors.array() });
+//         }
+
+//         try {
+//             const { email, password } = req.body;
+//             if (!process.env.JWT_SECRET) return res.status(500).json({ message: "Server configuration error!" });
+
+//             const user = await User.findOne({ email, role: "librarian" });
+//             if (!user) return res.status(400).json({ message: "Librarian not found!" });
+
+//             const isMatch = await bcrypt.compare(password, user.password);
+//             if (!isMatch) return res.status(400).json({ message: "Invalid credentials!" });
+
+//             generateToken(res, user);
+
+//             res.json({ message: "Librarian logged in successfully!", user: { id: user._id, name: user.name, email: user.email, role: user.role } });
+//         } catch (error) {
+//             res.status(500).json({ message: "Server Error" });
+//         }
+//     }
+// ];
+// new
 exports.librarianLogin = [
     // Validate email and password
     body("email").isEmail().withMessage("Please provide a valid email address."),
@@ -94,7 +125,16 @@ exports.librarianLogin = [
 
             generateToken(res, user);
 
-            res.json({ message: "Librarian logged in successfully!", user: { id: user._id, name: user.name, email: user.email, role: user.role } });
+            // res.json({ message: "Librarian logged in successfully!", user: { id: user._id, name: user.name, email: user.email, role: user.role } });
+            res.json({ 
+    message: "Librarian logged in successfully!", 
+    user: { 
+        id: user._id, 
+        name: user.name, 
+        email: user.email, 
+        role: user.role 
+    } 
+});
         } catch (error) {
             res.status(500).json({ message: "Server Error" });
         }
