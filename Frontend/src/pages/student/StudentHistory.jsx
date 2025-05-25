@@ -1,14 +1,14 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
-
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 const StudentHistory = () => {
     const [transactions, setTransactions] = useState([]);
     const [loading, setLoading] = useState(true);
     const navigate = useNavigate();
 
     useEffect(() => {
-        axios.get("http://localhost:5000/api/student/history", { withCredentials: true })
+        axios.get(`${API_BASE_URL}/api/student/history`, { withCredentials: true })
             .then(res => {
                 setTransactions(res.data.transactions);
             })

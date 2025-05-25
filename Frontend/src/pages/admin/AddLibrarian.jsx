@@ -6,6 +6,7 @@ import * as yup from "yup";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import Select from "react-select";
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
 const AddLibrarian = () => {
     const [loading, setLoading] = useState(false);
@@ -42,7 +43,7 @@ const AddLibrarian = () => {
         setLoading(true);
         try {
             const response = await axios.post(
-                "http://localhost:5000/api/admin/create-librarian",
+                `${API_BASE_URL}/api/admin/create-librarian`,
                 values,
                 { withCredentials: true }
             );

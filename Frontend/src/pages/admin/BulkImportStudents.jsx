@@ -1,7 +1,7 @@
 import { useState } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
-
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 const BulkImportStudents = () => {
     const [file, setFile] = useState(null);
     const [loading, setLoading] = useState(false);
@@ -32,7 +32,7 @@ const BulkImportStudents = () => {
         formData.append("file", file);
 
         try {
-            const response = await axios.post("http://localhost:5000/api/admin/bulk-import-students", formData, {
+            const response = await axios.post(`${API_BASE_URL}/admin/bulk-import-students`, formData, {
                 headers: {
                     "Content-Type": "multipart/form-data",
                 },

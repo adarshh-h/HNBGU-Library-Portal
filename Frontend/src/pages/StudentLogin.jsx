@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useNavigate, Link } from "react-router-dom"; // Import Link
 import axios from "axios";
-
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 const StudentLogin = () => {
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
@@ -16,8 +16,7 @@ const StudentLogin = () => {
 
         try {
             const response = await axios.post(
-                "http://localhost:5000/api/auth/student-login",
-                // `${import.meta.env.VITE_API_BASE_URL}/api/auth/student-login`,
+                `${API_BASE_URL}/api/auth/student-login`,
                 { email, password },
                 { withCredentials: true }
             );

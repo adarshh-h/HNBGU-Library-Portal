@@ -3,7 +3,7 @@ import { useParams, useNavigate } from "react-router-dom";
 import axios from "axios";
 import { ToastContainer, toast } from "react-toastify";
 import 'react-toastify/dist/ReactToastify.css';
-
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 const EditStudent = () => {
   const { id } = useParams();
   const navigate = useNavigate();
@@ -22,7 +22,7 @@ const EditStudent = () => {
   useEffect(() => {
     const fetchStudent = async () => {
       try {
-        const res = await axios.get(`http://localhost:5000/api/admin/students/${id}`, {
+        const res = await axios.get(`${API_BASE_URL}/api/admin/students/${id}`, {
           withCredentials: true,
         });
         setStudent(res.data);
@@ -47,7 +47,7 @@ const EditStudent = () => {
     setError("");
 
     try {
-      await axios.put(`http://localhost:5000/api/admin/students/${id}`, student, {
+      await axios.put(`${API_BASE_URL}/api/admin/students/${id}`, student, {
         withCredentials: true,
       });
       toast.success("Student updated successfully!");

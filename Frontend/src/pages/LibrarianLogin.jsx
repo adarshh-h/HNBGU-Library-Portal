@@ -1,8 +1,9 @@
 import { useState } from "react";
 import { useNavigate, Link } from "react-router-dom"; // Import Link
 import axios from "axios";
-
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 const LibrarianLogin = () => {
+
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const [loading, setLoading] = useState(false);
@@ -19,7 +20,7 @@ const LibrarianLogin = () => {
 
         try {
             const response = await axios.post(
-                "http://localhost:5000/api/auth/librarian-login",
+                `${API_BASE_URL}/api/auth/librarian-login`,
                 { email, password },
                 { withCredentials: true }
             );

@@ -10,7 +10,6 @@ const upload = multer({ dest: "uploads/" });
 const User = require("../models/User");
 const { changePassword } = require("../controllers/authController");
 
-
 router.get("/dashboard", protect("librarian"), (req, res) => {
     res.json({ message: "Welcome to Admin Dashboard!", user: req.user });
 });
@@ -65,5 +64,6 @@ router.put("/profile", protect("librarian"), async (req, res) => {
     res.status(500).json({ message: "Update failed", error: err.message });
   }
 });
+
 
 module.exports = router;

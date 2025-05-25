@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
-
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 const ViewBooks = () => {
   const [books, setBooks] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
@@ -16,7 +16,7 @@ const ViewBooks = () => {
       setError("");
       try {
         const res = await axios.get(
-          `http://localhost:5000/api/books/books?page=${currentPage}&limit=${limit}`,
+          `${API_BASE_URL}/api/books/books?page=${currentPage}&limit=${limit}`,
           { withCredentials: true }
         );
         setBooks(res.data.books);

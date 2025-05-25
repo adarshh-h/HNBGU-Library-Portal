@@ -89,7 +89,6 @@ import HistoryView from "./pages/admin/HistorySearch";
 import StudentHistory from './pages/student/StudentHistory';
 import ProfilePage from "./pages/ProfilePage";
 import MainLayout from "./components/MainLayout";
-
 import PublicLayout from "./components/PublicLayout";
 
 function App() {
@@ -97,18 +96,18 @@ function App() {
         <Router>
             <Routes>
                 {/* Public Routes */}
-{/* 
+                {/* 
                     <Route path="/" element={<HomePage />} />
                     <Route path="/librarian-login" element={<LibrarianLogin />} />
                     <Route path="/student-login" element={<StudentLogin />} />
                     <Route path="/forgot-password" element={<ForgotPasswordPage />} /> */}
 
-<Route element={<PublicLayout />}>
-    <Route path="/" element={<HomePage />} />
-    <Route path="/librarian-login" element={<LibrarianLogin />} />
-    <Route path="/student-login" element={<StudentLogin />} />
-    <Route path="/forgot-password" element={<ForgotPasswordPage />} />
-  </Route>
+                <Route element={<PublicLayout />}>
+                    <Route path="/" element={<HomePage />} />
+                    <Route path="/librarian-login" element={<LibrarianLogin />} />
+                    <Route path="/student-login" element={<StudentLogin />} />
+                    <Route path="/forgot-password" element={<ForgotPasswordPage />} />
+                </Route>
                 <Route element={<MainLayout />}>
                     {/* Protected Routes for Librarian */}
                     <Route element={<ProtectedRoute allowedRole="librarian" />}>
@@ -124,6 +123,7 @@ function App() {
                         <Route path="/return-books" element={<ReturnBooks />} />
                         <Route path="/history-books" element={<HistoryView />} />
                         <Route path="/librarian/profile" element={<ProfilePage />} />
+
                     </Route>
 
                     {/* Protected Routes for Student */}

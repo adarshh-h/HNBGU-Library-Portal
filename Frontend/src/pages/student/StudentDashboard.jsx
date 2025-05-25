@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import axios from "axios";
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
 const StudentDashboard = () => {
     const [user, setUser] = useState(null);
@@ -11,8 +12,8 @@ const StudentDashboard = () => {
     useEffect(() => {
         // Fetch user data and issued books
         axios.all([
-            axios.get("http://localhost:5000/api/student/dashboard", { withCredentials: true }),
-            axios.get("http://localhost:5000/api/student/issued-books", { withCredentials: true })
+            axios.get(`${API_BASE_URL}/api/student/dashboard`, { withCredentials: true }),
+            axios.get(`${API_BASE_URL}/api/student/issued-books`, { withCredentials: true })
         ])
         .then(axios.spread((userRes, booksRes) => {
             setUser(userRes.data.user);
@@ -23,7 +24,7 @@ const StudentDashboard = () => {
     }, [navigate]);
 
     const handleLogout = () => {
-        axios.post("http://localhost:5000/api/auth/logout", {}, { withCredentials: true })
+        axios.post(`${API_BASE_URL}/api/auth/logout`, {}, { withCredentials: true })
             .then(() => navigate("/"))
             .catch(err => console.error("Logout Failed", err));
     };

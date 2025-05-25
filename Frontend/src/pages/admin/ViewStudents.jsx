@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
-
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 const ViewStudents = () => {
   const [students, setStudents] = useState([]);
   const [search, setSearch] = useState("");
@@ -23,7 +23,7 @@ const ViewStudents = () => {
     setError("");
     try {
       const res = await axios.get(
-        `http://localhost:5000/api/admin/students?page=${currentPage}&limit=${limit}&search=${debouncedSearch}`,
+        `${API_BASE_URL}/api/admin/students?page=${currentPage}&limit=${limit}&search=${debouncedSearch}`,
         { withCredentials: true }
       );
       setStudents(res.data.students);

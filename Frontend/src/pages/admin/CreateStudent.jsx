@@ -1,6 +1,6 @@
 import { useState } from "react";
 import axios from "axios";
-
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 const CreateStudent = () => {
     const [name, setName] = useState("");
     const [email, setEmail] = useState("");
@@ -92,7 +92,7 @@ const CreateStudent = () => {
 
         try {
             await axios.post(
-                "http://localhost:5000/api/admin/create-student",
+                `${API_BASE_URL}/api/admin/create-student`,
                 { name, email, phone, department, batch, rollNumber },
                 { withCredentials: true }
             );

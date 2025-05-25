@@ -5,14 +5,14 @@ import {
   UserPlus, Users, Upload, LogOut,
   BookOpen, Book, ArrowDownUp, CornerDownLeft, User
 } from "lucide-react";
-
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 const AdminDashboard = () => {
   const [user, setUser] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
   const navigate = useNavigate();
 
   useEffect(() => {
-    axios.get("http://localhost:5000/api/admin/dashboard", { withCredentials: true })
+    axios.get(`${API_BASE_URL}/api/admin/dashboard`, { withCredentials: true })
       .then(res => {
         setUser(res.data.user);
         setIsLoading(false);
@@ -22,14 +22,6 @@ const AdminDashboard = () => {
         setIsLoading(false);
       });
   }, [navigate]);
-
-  // const handleLogout = () => {
-  //   if (window.confirm("Are you sure you want to log out?")) {
-  //     axios.post("http://localhost:5000/api/auth/logout", {}, { withCredentials: true })
-  //       .then(() => navigate("/"))
-  //       .catch(err => console.error("Logout Failed", err));
-  //   }
-  // };
 
   if (isLoading) {
     return (

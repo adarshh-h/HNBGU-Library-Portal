@@ -1,7 +1,9 @@
 import { useState, useRef } from "react";
 import axios from "axios";
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
 const ForgotPasswordPage = () => {
+
     const [email, setEmail] = useState("");
     const [otp, setOtp] = useState("");
     const [password, setPassword] = useState("");
@@ -19,7 +21,7 @@ const ForgotPasswordPage = () => {
         setMessage("");
 
         try {
-            const { data } = await axios.post("http://localhost:5000/api/auth/forgot-password", { email });
+            const { data } = await axios.post(`${API_BASE_URL}/api/auth/forgot-password`, { email });
             setMessage(data.message);
             setStep(2); // Move to OTP verification step
             setTimeout(() => otpInputRef.current?.focus(), 500); // Auto-focus OTP input
@@ -39,7 +41,7 @@ const ForgotPasswordPage = () => {
         setMessage("");
 
         try {
-            const { data } = await axios.post("http://localhost:5000/api/auth/verify-otp", {
+            const { data } = await axios.post(`${API_BASE_URL}/api/auth/verify-otp`, {
                 email,
                 otp,
                 newPassword: password,
