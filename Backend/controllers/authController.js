@@ -426,16 +426,23 @@ exports.changePassword = [
   }
 ];
 
-const generateToken = (res, user) => {
-    const token = jwt.sign({ id: user._id, role: user.role }, process.env.JWT_SECRET, { expiresIn: "1h" });
+// const jwt = require("jsonwebtoken");
 
-    res.cookie("token", token, {
-        httpOnly: true,
-        secure: process.env.NODE_ENV === "production", // ✅ Only secure in production
-        sameSite: "Strict",
-        maxAge: 3600000 // ✅ 1 Hour Expiry
-    });
+const generateToken = (res, user) => {
+  const token = jwt.sign({ id: user._id, role: user.role }, process.env.JWT_SECRET, {
+    expiresIn: "1h",
+  });
+
+  res.cookie("token", token, {
+    httpOnly: true,
+    secure: process.env.NODE_ENV === "production", // ✅ Secure in prod
+    sameSite: "None", // ✅ Allows cross-origin cookie sending
+    maxAge: 3600000, // ✅ 1 hour
+  });
 };
+
+module.exports = generateToken;
+
 
 exports.logout = (req, res) => {
     res.cookie("token", "", { httpOnly: true, expires: new Date(0) }); // ✅ Explicit Expiry
