@@ -36,7 +36,7 @@ const ProtectedRoute = ({ allowedRole }) => {
 
   useEffect(() => {
     axios
-      .get("http://localhost:5000/api/auth/check-session", {
+      .get(`${API_BASE_URL}/api/auth/check-session`, {
         withCredentials: true,
       })
       .then((res) => {
