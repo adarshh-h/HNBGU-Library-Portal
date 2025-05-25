@@ -132,34 +132,6 @@ exports.studentLogin = [
     }
 ];
 
-const generateToken = (res, user) => {
-    const token = jwt.sign({ id: user._id, role: user.role }, process.env.JWT_SECRET, { expiresIn: "1h" });
-
-    res.cookie("token", token, {
-        httpOnly: true,
-        secure: process.env.NODE_ENV === "production", // ✅ Only secure in production
-        sameSite: "Strict",
-        maxAge: 3600000 // ✅ 1 Hour Expiry
-    });
-};
-
-exports.logout = (req, res) => {
-    res.cookie("token", "", { httpOnly: true, expires: new Date(0) }); // ✅ Explicit Expiry
-    res.json({ message: "Logged out successfully!" });
-};
-
-exports.checkSession = (req, res) => {
-    const token = req.cookies.token;
-    if (!token) return res.status(401).json({ message: "Session expired. Please log in again." });
-
-    try {
-        const decoded = jwt.verify(token, process.env.JWT_SECRET);
-        res.json({ user: decoded });
-    } catch (error) {
-        res.status(401).json({ message: "Invalid session." });
-    }
-};
-
 exports.changePassword = [
   // Validation middleware
   body('currentPassword').notEmpty().withMessage('Current password is required'),
@@ -204,3 +176,32 @@ exports.changePassword = [
     }
   }
 ];
+
+const generateToken = (res, user) => {
+    const token = jwt.sign({ id: user._id, role: user.role }, process.env.JWT_SECRET, { expiresIn: "1h" });
+
+    res.cookie("token", token, {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === "production", // ✅ Only secure in production
+        sameSite: "Strict",
+        maxAge: 3600000 // ✅ 1 Hour Expiry
+    });
+};
+
+exports.logout = (req, res) => {
+    res.cookie("token", "", { httpOnly: true, expires: new Date(0) }); // ✅ Explicit Expiry
+    res.json({ message: "Logged out successfully!" });
+};
+
+exports.checkSession = (req, res) => {
+    const token = req.cookies.token;
+    if (!token) return res.status(401).json({ message: "Session expired. Please log in again." });
+
+    try {
+        const decoded = jwt.verify(token, process.env.JWT_SECRET);
+        res.json({ user: decoded });
+    } catch (error) {
+        res.status(401).json({ message: "Invalid session." });
+    }
+};
+
