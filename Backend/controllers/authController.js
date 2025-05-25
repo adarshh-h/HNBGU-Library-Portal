@@ -241,18 +241,24 @@ exports.logout = (req, res) => {
 //   }
 // };
 exports.checkSession = (req, res) => {
+  // Check both cookies and Authorization header
   const token = req.cookies.token || req.headers.authorization?.split(' ')[1];
-  if (!token) {
-    console.log("No token found in request");
-    return res.status(401).json({ message: "No authentication token found" });
-  }
   
+  if (!token) {
+    return res.status(401).json({ 
+      message: "No authentication token found",
+      error: "MISSING_TOKEN"
+    });
+  }
+
   try {
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
-    console.log("Token is valid:", decoded);
     res.json({ user: decoded });
   } catch (error) {
     console.error('Token verification failed:', error.message);
-    res.status(401).json({ message: "Invalid or expired token" });
+    res.status(401).json({ 
+      message: "Invalid or expired token",
+      error: "INVALID_TOKEN"
+    });
   }
 };
