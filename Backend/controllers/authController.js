@@ -191,14 +191,20 @@ exports.changePassword = [
 const generateToken = (res, user) => {
     const token = jwt.sign({ id: user._id, role: user.role }, process.env.JWT_SECRET, { expiresIn: "1h" });
 
-    res.cookie("token", token, {
+    const cookieOptions = {
         httpOnly: true,
-        secure: process.env.NODE_ENV === "production", // Secure in production
-        sameSite: process.env.NODE_ENV === "production" ? "none" : "lax", // None for cross-site in production
-        domain: process.env.NODE_ENV === "production" ? ".onrender.com" : undefined, // Domain for production
-        maxAge: 3600000,
-        path: "/"
-    });
+        secure: true, // Must be true for Render's HTTPS
+        sameSite: 'none', // Required for cross-origin
+        maxAge: 3600000, // 1 hour
+        path: '/'
+    };
+
+    // Only set domain in production, and let it default to the request domain
+    if (process.env.NODE_ENV === 'production') {
+        cookieOptions.domain = 'hnb-library-system.onrender.com';
+    }
+
+    res.cookie("token", token, cookieOptions);
 };
 
 exports.logout = (req, res) => {
@@ -218,47 +224,48 @@ exports.logout = (req, res) => {
 //     }
 // };
 
-// exports.checkSession = (req, res) => {
-//   // Check both cookies and Authorization header
-//   const token = req.cookies.token || req.headers.authorization?.split(' ')[1];
-  
-//   if (!token) {
-//     return res.status(401).json({ 
-//       message: "No authentication token found",
-//       error: "MISSING_TOKEN"
-//     });
-//   }
+exports.checkSession = async (req, res) => {
+    // Check both cookies and Authorization header
+    const token = req.cookies.token || req.headers.authorization?.split(' ')[1];
+    
+    if (!token) {
+        return res.status(401).json({ 
+            success: false,
+            message: "Authentication required",
+            code: "NO_TOKEN"
+        });
+    }
 
-//   try {
-//     const decoded = jwt.verify(token, process.env.JWT_SECRET);
-//     res.json({ user: decoded });
-//   } catch (error) {
-//     console.error('Token verification failed:', error.message);
-//     res.status(401).json({ 
-//       message: "Invalid or expired token",
-//       error: "INVALID_TOKEN"
-//     });
-//   }
-// };
-exports.checkSession = (req, res) => {
-  // Check both cookies and Authorization header
-  const token = req.cookies.token || req.headers.authorization?.split(' ')[1];
-  
-  if (!token) {
-    return res.status(401).json({ 
-      message: "No authentication token found",
-      error: "MISSING_TOKEN"
-    });
-  }
-
-  try {
-    const decoded = jwt.verify(token, process.env.JWT_SECRET);
-    res.json({ user: decoded });
-  } catch (error) {
-    console.error('Token verification failed:', error.message);
-    res.status(401).json({ 
-      message: "Invalid or expired token",
-      error: "INVALID_TOKEN"
-    });
-  }
+    try {
+        const decoded = jwt.verify(token, process.env.JWT_SECRET);
+        
+        // Verify user exists in database
+        const user = await User.findById(decoded.id).select('-password');
+        if (!user) {
+            return res.status(401).json({
+                success: false,
+                message: "User not found",
+                code: "USER_NOT_FOUND"
+            });
+        }
+        
+        res.json({ 
+            success: true,
+            user: {
+                id: user._id,
+                role: user.role,
+                name: user.name,
+                email: user.email
+            }
+        });
+    } catch (error) {
+        console.error('Token verification failed:', error.message);
+        res.status(401).json({ 
+            success: false,
+            message: "Invalid session",
+            code: "INVALID_TOKEN",
+            expiredAt: error.expiredAt // If token expired
+        });
+    }
 };
+
