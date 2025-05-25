@@ -428,7 +428,7 @@ exports.changePassword = [
 
 // const jwt = require("jsonwebtoken");
 
-const generateToken = (res, user) => {
+exports.generateToken = (res, user) => {
   const token = jwt.sign({ id: user._id, role: user.role }, process.env.JWT_SECRET, {
     expiresIn: "1h",
   });
@@ -441,7 +441,7 @@ const generateToken = (res, user) => {
   });
 };
 
-module.exports = generateToken;
+// module.exports = generateToken;
 
 
 exports.logout = (req, res) => {
