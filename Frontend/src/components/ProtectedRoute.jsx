@@ -29,7 +29,7 @@
 import { useEffect, useState } from "react";
 import { Outlet, useNavigate } from "react-router-dom";
 import axios from "axios";
-
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 const ProtectedRoute = ({ allowedRole }) => {
   const [isChecking, setIsChecking] = useState(true);
   const navigate = useNavigate();
