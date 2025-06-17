@@ -43,7 +43,7 @@ const ViewStudents = () => {
 
   const handleDelete = async (id) => {
     try {
-      await axios.delete(`http://localhost:5000/api/admin/students/${id}`, {
+      await axios.delete(`${API_BASE_URL}/api/admin/students/${id}`, {
         withCredentials: true,
       });
       fetchStudents();
