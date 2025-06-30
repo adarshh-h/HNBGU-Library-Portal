@@ -19,7 +19,7 @@ app.use(cookieParser());
 const allowedOrigins = [
   'http://localhost:5173',
   'https://hnb-library-system.vercel.app',
-  // 'https://hnb-library-system.onrender.com', // ✅ Add this line
+  'https://hnb-library-system.onrender.com', // ✅ Add this line
   'https://hnb-library-system-git-main-adarshs-projects-3c69f35f.vercel.app',
 ];
 
@@ -39,13 +39,11 @@ const corsOptions = {
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With'],
-  exposedHeaders: ['Authorization'], // Expose Authorization header
-  maxAge: 86400 // 24 hours
+  exposedHeaders: ['Authorization'], 
+  maxAge: 86400 
 };
 
 app.use(cors(corsOptions));
-
-// Handle preflight requests
 app.options('*', cors(corsOptions));
 
 // Routes
