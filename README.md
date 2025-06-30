@@ -2,11 +2,11 @@
 
 A modern, full-featured web application for managing the resources and operations of a college library, supporting both students and librarians.
 
-> **This project was specially designed and developed for the Central Library of Hemvati Nandan Bahuguna Garhwal University (HNBGU) and is actively used by the college's library department.**
+> **This project was specially designed and developed for the School of Engineering & Technology Library of Hemvati Nandan Bahuguna Garhwal University (HNBGU) and is actively used by the Computer Science & Engineering Library department.**
 
 ## 🎓 About
 
-This project was custom-built for the Central Library of Hemvati Nandan Bahuguna Garhwal University (HNBGU) and is currently in active use by the library department to manage daily operations.
+This project was custom-built for the School of Engineering & Technology Library of Hemvati Nandan Bahuguna Garhwal University (HNBGU) and is currently in active use by the Computer Science & Engineering Library departmentto manage daily operations.
 
 ---
 
