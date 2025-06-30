@@ -1,6 +1,12 @@
-# HNBGU Central Library Portal
+# HNBGU Library System
 
 A modern, full-featured web application for managing the resources and operations of a college library, supporting both students and librarians.
+
+> **This project was specially designed and developed for the Central Library of Hemvati Nandan Bahuguna Garhwal University (HNBGU) and is actively used by the college's library department.**
+
+## 🎓 About
+
+This project was custom-built for the Central Library of Hemvati Nandan Bahuguna Garhwal University (HNBGU) and is currently in active use by the library department to manage daily operations.
 
 ---
 
@@ -115,4 +121,3 @@ This project is licensed under the ISC License.
 ## ✅ Project Status
 
 This project is **complete** and production-ready. All major features have been implemented and tested. For support or feature requests, please open an issue.
-
