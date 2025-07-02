@@ -19,8 +19,7 @@ app.use(cookieParser());
 const allowedOrigins = [
   'http://localhost:5173',
   'https://hnbgu-library-portal-alpha.vercel.app',
-  'https://hnbgu-library.onrender.com', // ✅ Add this line
-  'https://hnbgu-library-portal-git-main-adarshs-projects-3c69f35f.vercel.app',
+  'https://hnbgu-library.onrender.com',
 ];
 
 
