@@ -12,14 +12,16 @@ This project was custom-built for the School of Engineering & Technology Library
 
 ## 🚀 Features
 
-- Digital catalog with advanced search
-- Book issue and return workflows
-- Borrowing and return history
-- Bulk import of books and students (CSV)
-- Email notifications for due dates
-- Admin dashboard for user and book management
-- Secure authentication and role-based access
-
+- Admin Dashboard: Centralized hub for all administrative tasks.
+- Student Dashboard: Personalized space for students to view their issued books and history.
+- Role-Based Access Control: Secure access for Admins and Students.
+- Book Management: Add, view, update, and delete books from the library catalog.
+- Student Management: Create, view, and manage student accounts.
+- Bulk Import: Easily add multiple books or students at once by uploading .csv files.
+- Issue & Return System: Seamlessly manage the process of issuing and returning books.
+- Transaction History: Keeps a detailed log of all book transactions.
+- Email Notifications: Automatic email confirmations for book issues, returns, and due date reminders.
+- Scheduled Reminders: Automated daily checks to send reminders for books due within 7 days.
 ---
 
 ## 🏗️ Project Structure
@@ -43,6 +45,7 @@ Library/
 2. **Environment variables:**
    - Create a `.env` file in `Backend/` with:
      ```
+     PORT=5000
      MONGO_URI=your_mongodb_connection_string
      JWT_SECRET=your_jwt_secret
      EMAIL_USER=your_email@example.com
@@ -57,6 +60,14 @@ Library/
    - The server runs on port `6000` by default.
 
 ---
+## 🛠️ Tech Stack
+-- Frontend: React.js, Vite, CSS
+-- Backend: Node.js, Express.js
+-- Database: MongoDB
+-- Authentication: JSON Web Tokens (JWT), Cookies
+-- Email Service: Nodemailer with Gmail
+
+---
 
 ## 💻 Frontend Setup
 
@@ -69,7 +80,7 @@ Library/
 2. **Environment variables:**
    - Create a `.env` file in `Frontend/` with:
      ```
-     VITE_API_BASE_URL=http://localhost:6000
+     VITE_API_BASE_URL=http://localhost:5000
      ```
 
 3. **Run the frontend app:**
@@ -77,6 +88,14 @@ Library/
    npm run dev
    ```
    - The app runs on [http://localhost:5173](http://localhost:5173) by default.
+
+---
+## 🧪 Testing Credentials
+For testing purposes, you can use the following credentials to log in:
+
+-- Admin/Librarian Email: kumaradarsh0811@gmail.com
+-- Password: 87654321
+You will need to create this user in your database first. You can use the "Add Librarian" feature or create it directly in your MongoDB instance with the role admin. The password will be automatically hashed when the user is created through the application.
 
 ---
 
