@@ -93,8 +93,8 @@ Library/
 ## 🧪 Testing Credentials
 For testing purposes, you can use the following credentials to log in:
 
-- Admin/Librarian Email: kumaradarsh0811@gmail.com
-- Password: 87654321
+- Admin/Librarian Email: admin@gmail.com
+- Password: 12345678
 - 
 You will need to create this user in your database first. You can use the "Add Librarian" feature or create it directly in your MongoDB instance with the role admin. The password will be automatically hashed when the user is created through the application.
 
