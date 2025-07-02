@@ -9,28 +9,78 @@ const StudentLogin = () => {
     const [error, setError] = useState("");
     const navigate = useNavigate();
 
+    // const handleLogin = async (e) => {
+    //     e.preventDefault();
+    //     setLoading(true);
+    //     setError("");
+
+    //     try {
+    //         const response = await axios.post(
+    //             `${API_BASE_URL}/api/auth/student-login`,
+    //             { email, password },
+    //             { withCredentials: true }
+    //         );
+
+    //         localStorage.setItem("role", "student");
+    //         localStorage.setItem("name", response.data.user.name); // Add this line
+    //         navigate("/student-dashboard", { replace: true });
+    //     } catch (error) {
+    //         setError(error.response?.data?.message || "Login failed!");
+    //     } finally {
+    //         setLoading(false);
+    //     }
+    // };
     const handleLogin = async (e) => {
-        e.preventDefault();
-        setLoading(true);
-        setError("");
+    e.preventDefault();
+    setLoading(true);
+    setError("");
 
-        try {
-            const response = await axios.post(
-                `${API_BASE_URL}/api/auth/student-login`,
-                { email, password },
-                { withCredentials: true }
-            );
+    try {
+        console.log("Attempting student login to:", `${API_BASE_URL}/api/auth/student-login`);
+        
+        const response = await axios.post(
+            `${API_BASE_URL}/api/auth/student-login`,
+            { email, password },
+            { 
+                withCredentials: true,
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Accept': 'application/json'
+                }
+            }
+        );
 
+        console.log("Student login response:", response.data);
+        
+        if (response.data?.success) {
             localStorage.setItem("role", "student");
-            localStorage.setItem("name", response.data.user.name); // Add this line
+            localStorage.setItem("name", response.data.user.name);
             navigate("/student-dashboard", { replace: true });
-        } catch (error) {
-            setError(error.response?.data?.message || "Login failed!");
-        } finally {
-            setLoading(false);
+        } else {
+            throw new Error("Unexpected response format");
         }
-    };
-    
+    } catch (error) {
+        console.error("Student login error details:", {
+            message: error.message,
+            response: error.response?.data,
+            config: error.config
+        });
+        
+        const serverMessage = error.response?.data?.message || "Login failed";
+        const errorCode = error.response?.data?.code;
+        
+        let displayMessage = serverMessage;
+        if (errorCode === 'STUDENT_NOT_FOUND') {
+            displayMessage = "No student account found with this email";
+        } else if (errorCode === 'INVALID_CREDENTIALS') {
+            displayMessage = "Invalid email or password";
+        }
+        
+        setError(displayMessage);
+    } finally {
+        setLoading(false);
+    }
+};
     return (
         <div className="flex items-center justify-center min-h-screen bg-gray-100">
             <div className="bg-white p-8 rounded-lg shadow-lg w-96">
