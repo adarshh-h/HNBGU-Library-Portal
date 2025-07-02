@@ -12,28 +12,70 @@ const LibrarianLogin = () => {
 
    
     
-    
     const handleLogin = async (e) => {
-        e.preventDefault();
-        setLoading(true);
-        setError("");
+    e.preventDefault();
+    setLoading(true);
+    setError("");
 
-        try {
-            const response = await axios.post(
-                `${API_BASE_URL}/api/auth/librarian-login`,
-                { email, password },
-                { withCredentials: true }
-            );
+    try {
+        console.log("Attempting login to:", `${API_BASE_URL}/api/auth/librarian-login`);
+        
+        const response = await axios.post(
+            `${API_BASE_URL}/api/auth/librarian-login`,
+            { email, password },
+            { 
+                withCredentials: true,
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            }
+        );
 
+        console.log("Login response:", response);
+
+        if (response.data && response.data.user) {
             localStorage.setItem("role", "librarian");
-            localStorage.setItem("name", response.data.user.name); // Add this line
+            localStorage.setItem("name", response.data.user.name);
             navigate("/admin-dashboard", { replace: true });
-        } catch (error) {
-            setError(error.response?.data?.message || "Login failed!");
-        } finally {
-            setLoading(false);
+        } else {
+            throw new Error("Invalid response structure");
         }
-    };
+    } catch (error) {
+        console.error("Login error details:", {
+            message: error.message,
+            response: error.response,
+            config: error.config
+        });
+        
+        const errorMessage = error.response?.data?.message || 
+                           error.response?.data?.error || 
+                           "Login failed!";
+        setError(errorMessage);
+    } finally {
+        setLoading(false);
+    }
+};
+    // const handleLogin = async (e) => {
+    //     e.preventDefault();
+    //     setLoading(true);
+    //     setError("");
+
+    //     try {
+    //         const response = await axios.post(
+    //             `${API_BASE_URL}/api/auth/librarian-login`,
+    //             { email, password },
+    //             { withCredentials: true }
+    //         );
+
+    //         localStorage.setItem("role", "librarian");
+    //         localStorage.setItem("name", response.data.user.name); // Add this line
+    //         navigate("/admin-dashboard", { replace: true });
+    //     } catch (error) {
+    //         setError(error.response?.data?.message || "Login failed!");
+    //     } finally {
+    //         setLoading(false);
+    //     }
+    // };
 
     
     return (
