@@ -12,13 +12,13 @@ const LibrarianLogin = () => {
 
    
     
-    const handleLogin = async (e) => {
+   const handleLogin = async (e) => {
     e.preventDefault();
     setLoading(true);
     setError("");
 
     try {
-        console.log("Attempting login to:", `${API_BASE_URL}/api/auth/librarian-login`);
+        console.log("Attempting login with:", { email, password });
         
         const response = await axios.post(
             `${API_BASE_URL}/api/auth/librarian-login`,
@@ -26,31 +26,40 @@ const LibrarianLogin = () => {
             { 
                 withCredentials: true,
                 headers: {
-                    'Content-Type': 'application/json'
+                    'Content-Type': 'application/json',
+                    'Accept': 'application/json'
                 }
             }
         );
 
-        console.log("Login response:", response);
-
+        console.log("Login response:", response.data);
+        
         if (response.data && response.data.user) {
             localStorage.setItem("role", "librarian");
             localStorage.setItem("name", response.data.user.name);
             navigate("/admin-dashboard", { replace: true });
-        } else {
-            throw new Error("Invalid response structure");
         }
     } catch (error) {
-        console.error("Login error details:", {
+        console.error("Full error details:", {
             message: error.message,
-            response: error.response,
+            response: error.response?.data,
             config: error.config
         });
         
-        const errorMessage = error.response?.data?.message || 
-                           error.response?.data?.error || 
-                           "Login failed!";
-        setError(errorMessage);
+        const serverMessage = error.response?.data?.message;
+        const errorCode = error.response?.data?.code;
+        
+        let displayMessage = "Login failed";
+        if (serverMessage) {
+            displayMessage += `: ${serverMessage}`;
+            if (errorCode === 'USER_NOT_FOUND') {
+                displayMessage = "No librarian account found with this email";
+            } else if (errorCode === 'INVALID_CREDENTIALS') {
+                displayMessage = "Invalid email or password";
+            }
+        }
+        
+        setError(displayMessage);
     } finally {
         setLoading(false);
     }
