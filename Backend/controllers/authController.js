@@ -101,68 +101,83 @@ exports.verifyOtp = async (req, res) => {
 //     }
 // ];
 // Add better error handling in the login functions
-exports.librarianLogin = [
-    body("email").isEmail().withMessage("Please provide a valid email address."),
-    body("password").notEmpty().withMessage("Password is required."),
 
-    async (req, res) => {
-        const errors = validationResult(req);
-        if (!errors.isEmpty()) {
-            return res.status(400).json({ errors: errors.array() });
-        }
+exports.librarianLogin = async (req, res) => {
+    try {
+        console.log('Login request received:', req.body);
+        
+        const { email, password } = req.body;
 
-        try {
-            const { email, password } = req.body;
-            
-            // More comprehensive environment check
-            if (!process.env.JWT_SECRET) {
-                console.error("JWT_SECRET is not configured");
-                return res.status(500).json({ 
-                    message: "Server configuration error!",
-                    code: "SERVER_CONFIG_ERROR"
-                });
-            }
-
-            const user = await User.findOne({ email, role: "librarian" });
-            if (!user) {
-                return res.status(400).json({ 
-                    message: "Librarian not found!",
-                    code: "USER_NOT_FOUND"
-                });
-            }
-
-            const isMatch = await bcrypt.compare(password, user.password);
-            if (!isMatch) {
-                return res.status(400).json({ 
-                    message: "Invalid credentials!",
-                    code: "INVALID_CREDENTIALS"
-                });
-            }
-
-            // Add logging before token generation
-            console.log("Generating token for user:", user.email);
-            
-            generateToken(res, user);
-
-            res.json({ 
-                message: "Librarian logged in successfully!", 
-                user: { 
-                    id: user._id, 
-                    name: user.name, 
-                    email: user.email, 
-                    role: user.role 
-                }
-            });
-        } catch (error) {
-            console.error("Login error:", error);
-            res.status(500).json({ 
-                message: "Server Error",
-                error: error.message,
-                stack: process.env.NODE_ENV === 'development' ? error.stack : undefined
+        // Validate environment variables
+        if (!process.env.JWT_SECRET) {
+            console.error('JWT_SECRET is missing in environment variables');
+            return res.status(500).json({ 
+                message: 'Server configuration error',
+                code: 'MISSING_JWT_SECRET'
             });
         }
+
+        // Find user
+        const user = await User.findOne({ email, role: 'librarian' });
+        if (!user) {
+            console.log('No librarian found with email:', email);
+            return res.status(400).json({ 
+                message: 'Librarian not found', 
+                code: 'USER_NOT_FOUND'
+            });
+        }
+
+        // Compare passwords
+        const isMatch = await bcrypt.compare(password, user.password);
+        if (!isMatch) {
+            console.log('Password mismatch for user:', email);
+            return res.status(400).json({ 
+                message: 'Invalid credentials', 
+                code: 'INVALID_CREDENTIALS'
+            });
+        }
+
+        // Generate token
+        console.log('Generating token for:', email);
+        const token = jwt.sign(
+            { id: user._id, role: user.role }, 
+            process.env.JWT_SECRET, 
+            { expiresIn: '1h' }
+        );
+
+        // Set cookie
+        res.cookie('token', token, {
+            httpOnly: true,
+            secure: process.env.NODE_ENV === 'production',
+            sameSite: 'none',
+            maxAge: 3600000
+        });
+
+        console.log('Login successful for:', email);
+        res.json({
+            message: 'Login successful',
+            user: {
+                id: user._id,
+                name: user.name,
+                email: user.email,
+                role: user.role
+            }
+        });
+
+    } catch (error) {
+        console.error('Login error:', {
+            message: error.message,
+            stack: error.stack,
+            body: req.body
+        });
+        res.status(500).json({
+            message: 'Internal server error',
+            error: process.env.NODE_ENV === 'development' ? error.message : undefined,
+            code: 'INTERNAL_SERVER_ERROR'
+        });
     }
-];
+};
+
 exports.studentLogin = [
     // Validate email and password
     body("email").isEmail().withMessage("Please provide a valid email address."),
