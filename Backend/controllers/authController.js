@@ -70,13 +70,42 @@ exports.verifyOtp = async (req, res) => {
     }
 };
 
+// exports.librarianLogin = [
+//     // Validate email and password
+//     body("email").isEmail().withMessage("Please provide a valid email address."),
+//     body("password").notEmpty().withMessage("Password is required."),
+
+//     async (req, res) => {
+//         // Check for validation errors
+//         const errors = validationResult(req);
+//         if (!errors.isEmpty()) {
+//             return res.status(400).json({ errors: errors.array() });
+//         }
+
+//         try {
+//             const { email, password } = req.body;
+//             if (!process.env.JWT_SECRET) return res.status(500).json({ message: "Server configuration error!" });
+
+//             const user = await User.findOne({ email, role: "librarian" });
+//             if (!user) return res.status(400).json({ message: "Librarian not found!" });
+
+//             const isMatch = await bcrypt.compare(password, user.password);
+//             if (!isMatch) return res.status(400).json({ message: "Invalid credentials!" });
+
+//             generateToken(res, user);
+
+//             res.json({ message: "Librarian logged in successfully!", user: { id: user._id, name: user.name, email: user.email, role: user.role } });
+//         } catch (error) {
+//             res.status(500).json({ message: "Server Error" });
+//         }
+//     }
+// ];
+// Add better error handling in the login functions
 exports.librarianLogin = [
-    // Validate email and password
     body("email").isEmail().withMessage("Please provide a valid email address."),
     body("password").notEmpty().withMessage("Password is required."),
 
     async (req, res) => {
-        // Check for validation errors
         const errors = validationResult(req);
         if (!errors.isEmpty()) {
             return res.status(400).json({ errors: errors.array() });
@@ -84,23 +113,56 @@ exports.librarianLogin = [
 
         try {
             const { email, password } = req.body;
-            if (!process.env.JWT_SECRET) return res.status(500).json({ message: "Server configuration error!" });
+            
+            // More comprehensive environment check
+            if (!process.env.JWT_SECRET) {
+                console.error("JWT_SECRET is not configured");
+                return res.status(500).json({ 
+                    message: "Server configuration error!",
+                    code: "SERVER_CONFIG_ERROR"
+                });
+            }
 
             const user = await User.findOne({ email, role: "librarian" });
-            if (!user) return res.status(400).json({ message: "Librarian not found!" });
+            if (!user) {
+                return res.status(400).json({ 
+                    message: "Librarian not found!",
+                    code: "USER_NOT_FOUND"
+                });
+            }
 
             const isMatch = await bcrypt.compare(password, user.password);
-            if (!isMatch) return res.status(400).json({ message: "Invalid credentials!" });
+            if (!isMatch) {
+                return res.status(400).json({ 
+                    message: "Invalid credentials!",
+                    code: "INVALID_CREDENTIALS"
+                });
+            }
 
+            // Add logging before token generation
+            console.log("Generating token for user:", user.email);
+            
             generateToken(res, user);
 
-            res.json({ message: "Librarian logged in successfully!", user: { id: user._id, name: user.name, email: user.email, role: user.role } });
+            res.json({ 
+                message: "Librarian logged in successfully!", 
+                user: { 
+                    id: user._id, 
+                    name: user.name, 
+                    email: user.email, 
+                    role: user.role 
+                }
+            });
         } catch (error) {
-            res.status(500).json({ message: "Server Error" });
+            console.error("Login error:", error);
+            res.status(500).json({ 
+                message: "Server Error",
+                error: error.message,
+                stack: process.env.NODE_ENV === 'development' ? error.stack : undefined
+            });
         }
     }
 ];
-
 exports.studentLogin = [
     // Validate email and password
     body("email").isEmail().withMessage("Please provide a valid email address."),
