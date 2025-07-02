@@ -178,37 +178,112 @@ exports.librarianLogin = async (req, res) => {
     }
 };
 
-exports.studentLogin = [
-    // Validate email and password
-    body("email").isEmail().withMessage("Please provide a valid email address."),
-    body("password").notEmpty().withMessage("Password is required."),
+// exports.studentLogin = [
+//     // Validate email and password
+//     body("email").isEmail().withMessage("Please provide a valid email address."),
+//     body("password").notEmpty().withMessage("Password is required."),
 
-    async (req, res) => {
-        // Check for validation errors
-        const errors = validationResult(req);
-        if (!errors.isEmpty()) {
-            return res.status(400).json({ errors: errors.array() });
+//     async (req, res) => {
+//         // Check for validation errors
+//         const errors = validationResult(req);
+//         if (!errors.isEmpty()) {
+//             return res.status(400).json({ errors: errors.array() });
+//         }
+
+//         try {
+//             const { email, password } = req.body;
+//             if (!process.env.JWT_SECRET) return res.status(500).json({ message: "Server configuration error!" });
+
+//             const user = await User.findOne({ email, role: "student" });
+//             if (!user) return res.status(400).json({ message: "Student not found!" });
+
+//             const isMatch = await bcrypt.compare(password, user.password);
+//             if (!isMatch) return res.status(400).json({ message: "Invalid credentials!" });
+
+//             generateToken(res, user);
+
+//             res.json({ message: "Student logged in successfully!", user: { id: user._id, name: user.name, email: user.email, role: user.role } });
+//         } catch (error) {
+//             res.status(500).json({ message: "Server Error" });
+//         }
+//     }
+// ];
+exports.studentLogin = async (req, res) => {
+    try {
+        console.log('Student login request received:', req.body);
+        
+        const { email, password } = req.body;
+
+        // Validate environment variables
+        if (!process.env.JWT_SECRET) {
+            console.error('JWT_SECRET is missing in environment variables');
+            return res.status(500).json({ 
+                message: 'Server configuration error',
+                code: 'MISSING_JWT_SECRET'
+            });
         }
 
-        try {
-            const { email, password } = req.body;
-            if (!process.env.JWT_SECRET) return res.status(500).json({ message: "Server configuration error!" });
-
-            const user = await User.findOne({ email, role: "student" });
-            if (!user) return res.status(400).json({ message: "Student not found!" });
-
-            const isMatch = await bcrypt.compare(password, user.password);
-            if (!isMatch) return res.status(400).json({ message: "Invalid credentials!" });
-
-            generateToken(res, user);
-
-            res.json({ message: "Student logged in successfully!", user: { id: user._id, name: user.name, email: user.email, role: user.role } });
-        } catch (error) {
-            res.status(500).json({ message: "Server Error" });
+        // Find user with student role
+        const user = await User.findOne({ email, role: 'student' }).select('+password');
+        if (!user) {
+            console.log('No student found with email:', email);
+            return res.status(400).json({ 
+                message: 'Student account not found', 
+                code: 'STUDENT_NOT_FOUND'
+            });
         }
+
+        // Compare passwords
+        const isMatch = await bcrypt.compare(password, user.password);
+        if (!isMatch) {
+            console.log('Password mismatch for student:', email);
+            return res.status(400).json({ 
+                message: 'Invalid credentials', 
+                code: 'INVALID_CREDENTIALS'
+            });
+        }
+
+        // Generate token
+        console.log('Generating token for student:', email);
+        const token = jwt.sign(
+            { id: user._id, role: user.role }, 
+            process.env.JWT_SECRET, 
+            { expiresIn: '1h' }
+        );
+
+        // Set cookie
+        res.cookie('token', token, {
+            httpOnly: true,
+            secure: process.env.NODE_ENV === 'production',
+            sameSite: 'none',
+            maxAge: 3600000
+        });
+
+        console.log('Student login successful for:', email);
+        res.json({
+            success: true,
+            message: 'Login successful',
+            user: {
+                id: user._id,
+                name: user.name,
+                email: user.email,
+                role: user.role
+            }
+        });
+
+    } catch (error) {
+        console.error('Student login error:', {
+            message: error.message,
+            stack: error.stack,
+            body: req.body
+        });
+        res.status(500).json({
+            message: 'Internal server error',
+            error: process.env.NODE_ENV === 'development' ? error.message : undefined,
+            code: 'INTERNAL_SERVER_ERROR'
+        });
     }
-];
-
+};
 exports.changePassword = [
   // Validation middleware
   body('currentPassword').notEmpty().withMessage('Current password is required'),
