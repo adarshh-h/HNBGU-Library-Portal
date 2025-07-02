@@ -61,11 +61,11 @@ Library/
 
 ---
 ## 🛠️ Tech Stack
--- Frontend: React.js, Vite, CSS
--- Backend: Node.js, Express.js
--- Database: MongoDB
--- Authentication: JSON Web Tokens (JWT), Cookies
--- Email Service: Nodemailer with Gmail
+- Frontend: React.js, Vite, CSS
+- Backend: Node.js, Express.js
+- Database: MongoDB
+- Authentication: JSON Web Tokens (JWT), Cookies
+- Email Service: Nodemailer with Gmail
 
 ---
 
@@ -93,8 +93,9 @@ Library/
 ## 🧪 Testing Credentials
 For testing purposes, you can use the following credentials to log in:
 
--- Admin/Librarian Email: kumaradarsh0811@gmail.com
--- Password: 87654321
+- Admin/Librarian Email: kumaradarsh0811@gmail.com
+- Password: 87654321
+- 
 You will need to create this user in your database first. You can use the "Add Librarian" feature or create it directly in your MongoDB instance with the role admin. The password will be automatically hashed when the user is created through the application.
 
 ---
