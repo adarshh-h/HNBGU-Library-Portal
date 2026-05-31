@@ -1,6 +1,6 @@
 # 📚 HNBGU Central Library Management System
 
-A full-stack web application for managing the central library of **Hemwati Nandan Bahuguna Garhwal University (HNBGU)**. The system provides separate portals for librarians and students, supporting book management, issuance, returns, and automated email notifications.
+A full-stack web application for managing the library of **Hemwati Nandan Bahuguna Garhwal University (HNBGU)**. The system provides separate portals for librarians and students, supporting book management, issuance, returns, and automated email notifications.
 
 ---
 
