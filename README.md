@@ -23,6 +23,20 @@ A full-stack web application for managing the library of **Hemwati Nandan Bahugu
 
 ---
 
+## 🧪 Testing Credentials
+
+For testing purposes, you can use the following credentials to log in:
+
+-   **Admin/Librarian Email**: `test@gmail.com`
+-   **Password**: `test123`
+
+You will need to create this user in your database first. You can use the "Add Librarian" feature or create it directly in your MongoDB instance with the role `admin`. The password will be automatically hashed when the user is created through the application.
+
+**Student Default Password:**
+When a new student is created, their initial password is set to the first two letters of their first name (case-sensitive) followed by `@123`.
+For example, a student named "Amit Kumar" will have the default password `Am@123`.
+
+
 ## ✨ Features
 
 ### Librarian Portal
